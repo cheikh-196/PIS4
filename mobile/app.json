@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "FindIt",
+    "slug": "findit",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "findit",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#007AFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.findit.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "FindIt utilise votre localisation pour afficher les objets perdus/trouvés près de chez vous.",
+        "NSPhotoLibraryUsageDescription": "FindIt a besoin d'accéder à vos photos pour ajouter des images aux signalements.",
+        "NSCameraUsageDescription": "FindIt a besoin de la caméra pour prendre des photos d'objets."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#007AFF",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "package": "com.findit.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "expo-image-picker",
+      "expo-secure-store",
+      "expo-notifications"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
