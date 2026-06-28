@@ -81,15 +81,13 @@ exports.findMatches = async (reportId, reportType) => {
       category: lostReport.category,
     });
 
+    const existingMatches = await Match.find({ lostReport: lostReport._id });
+    const matchedFoundIds = new Set(existingMatches.map((m) => m.foundReport.toString()));
+
     for (const found of foundReports) {
       const score = calculateScore(lostReport, found);
       if (score >= THRESHOLD) {
-        const existing = await Match.findOne({
-          lostReport: lostReport._id,
-          foundReport: found._id,
-        });
-
-        if (!existing) {
+        if (!matchedFoundIds.has(found._id.toString())) {
           const match = await Match.create({
             lostReport: lostReport._id,
             foundReport: found._id,
@@ -100,7 +98,8 @@ exports.findMatches = async (reportId, reportType) => {
           await notificationService.sendMatchNotification(match, lostReport, found);
           matches.push(match);
         } else {
-          matches.push(existing);
+          const existing = existingMatches.find((m) => m.foundReport.toString() === found._id.toString());
+          if (existing) matches.push(existing);
         }
       }
     }
@@ -113,15 +112,13 @@ exports.findMatches = async (reportId, reportType) => {
       category: foundReport.category,
     });
 
+    const existingMatches = await Match.find({ foundReport: foundReport._id });
+    const matchedLostIds = new Set(existingMatches.map((m) => m.lostReport.toString()));
+
     for (const lost of lostReports) {
       const score = calculateScore(lost, foundReport);
       if (score >= THRESHOLD) {
-        const existing = await Match.findOne({
-          lostReport: lost._id,
-          foundReport: foundReport._id,
-        });
-
-        if (!existing) {
+        if (!matchedLostIds.has(lost._id.toString())) {
           const match = await Match.create({
             lostReport: lost._id,
             foundReport: foundReport._id,
@@ -132,7 +129,8 @@ exports.findMatches = async (reportId, reportType) => {
           await notificationService.sendMatchNotification(match, lost, foundReport);
           matches.push(match);
         } else {
-          matches.push(existing);
+          const existing = existingMatches.find((m) => m.lostReport.toString() === lost._id.toString());
+          if (existing) matches.push(existing);
         }
       }
     }

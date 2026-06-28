@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const {
   register, login, getMe, updateDetails, updatePassword,
   updateAvatar, updatePushToken, forgotPassword, resetPassword,
@@ -12,9 +13,17 @@ const {
   resetPasswordValidator, updateProfileValidator, updatePasswordValidator,
 } = require('../validators/authValidator');
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Trop de tentatives. Réessayez dans 15 minutes.' },
+});
+
 router.post('/register', registerValidator, validate, register);
-router.post('/login', loginValidator, validate, login);
-router.post('/forgot-password', forgotPasswordValidator, validate, forgotPassword);
+router.post('/login', authLimiter, loginValidator, validate, login);
+router.post('/forgot-password', authLimiter, forgotPasswordValidator, validate, forgotPassword);
 router.post('/reset-password/:token', resetPasswordValidator, validate, resetPassword);
 
 router.get('/me', protect, getMe);

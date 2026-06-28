@@ -67,7 +67,7 @@ exports.getMapReports = catchAsync(async (req, res, next) => {
 });
 
 exports.getNearbyReports = catchAsync(async (req, res, next) => {
-  const { lat = 48.8566, lng = 2.3522, radius = 5 } = req.query;
+  const { lat = 18.0735, lng = -15.9780, radius = 5 } = req.query;
 
   const geoQuery = {
     $near: {

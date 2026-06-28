@@ -2,12 +2,21 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger/swagger');
 const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/AppError');
 const env = require('./config/env');
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Trop de requêtes. Réessayez dans 15 minutes.' },
+});
 
 const authRoutes = require('./routes/authRoutes');
 const lostRoutes = require('./routes/lostRoutes');
@@ -36,6 +45,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customSiteTitle: 'FindIt API Documentation',
 }));
 
+app.use('/api', apiLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/lost', lostRoutes);
 app.use('/api/found', foundRoutes);

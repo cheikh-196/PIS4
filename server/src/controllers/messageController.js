@@ -55,6 +55,15 @@ exports.getConversations = catchAsync(async (req, res, next) => {
 exports.getMessages = catchAsync(async (req, res, next) => {
   const { reportId } = req.params;
 
+  const isParticipant = await Message.exists({
+    reportId,
+    $or: [{ sender: req.user.id }, { receiver: req.user.id }],
+  });
+
+  if (!isParticipant) {
+    return next(new AppError('Accès non autorisé à cette conversation.', 403));
+  }
+
   const messages = await Message.find({ reportId })
     .populate('sender', 'name avatar')
     .populate('receiver', 'name avatar')
